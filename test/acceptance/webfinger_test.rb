@@ -4,6 +4,24 @@ require_relative 'acceptance_helper'
 describe "Webfinger" do
   include AcceptanceHelper
 
+  describe "user xrd" do
+    before do
+      @user = Fabricate(:user)
+      @subject = "acct:#{@user.username}@#{@user.author.domain}"
+      get "/users/#{@subject}/xrd.xml"
+      if last_response.status == 301
+        follow_redirect!
+      end
+
+      @xml = Nokogiri.XML(last_response.body)
+    end
+
+    it "contains the account name" do
+      subject = @xml.xpath("//xmlns:Subject").first.content
+      subject.must_equal(@subject)
+    end
+  end
+
   it "404s if that user doesnt exist" do
     get "/users/acct:nonexistent@somedomain.com/xrd.xml"
     if last_response.status == 301
