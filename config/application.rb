@@ -27,7 +27,6 @@ module RstatUs
     # Custom directories with classes and modules you want to be autoloadable.
     config.autoload_paths += %W(lib)
 
-
     # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
     config.force_ssl = (ENV["ENABLE_HTTPS"] == "yes")
 
@@ -60,15 +59,14 @@ module RstatUs
 
     config.assets.initialize_on_precompile = false
 
-
     config.generators do |g|
       g.template_engine :haml
       g.test_framework :mini_test, :spec => true
       g.orm :mongo_mapper
     end
-
   end
 
+  USE_SSL        = (ENV["ENABLE_HTTPS"] == "yes")
   DEFAULT_AVATAR = "avatar.png"
 
   # Custom RstatUs exceptions

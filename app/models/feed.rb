@@ -132,7 +132,7 @@ class Feed
   end
 
   def url(atom_format = false)
-    url = (remote_url.nil? && author) ? "http://#{author.domain}/feeds/#{id}" : remote_url
+    url = (remote_url.nil? && author) ? "http#{RstatUs::USE_SSL ? 's' : ''}://#{author.domain}/feeds/#{id}" : remote_url
     url << ".atom" if atom_format
     url
   end
