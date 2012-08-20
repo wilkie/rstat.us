@@ -123,7 +123,7 @@ class Feed
   # needs absolute url for feed to give to hub for callback
   def ping_hubs
     feed_url = "#{url}.atom"
-    puts "Pinging for: feed_url"
+    puts "Pinging for: #{feed_url}"
     OPub::Publisher.new(feed_url, hubs).ping_hubs
   end
 
