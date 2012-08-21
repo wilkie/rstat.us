@@ -31,10 +31,16 @@ class SalmonInterpreter
     # notification came from this author. We can then actually commit the
     # author if it is new.
     if @author.new?
+      @author.feed.save!
       @author.save!
     end
 
     process_activity
+  end
+
+  def create_feed
+    @feed = Feed.create!(:author => @author,
+                         :remote_url => @author)
   end
 
   def process_activity
@@ -142,6 +148,9 @@ class SalmonInterpreter
 
       # Salmon URL
       author.salmon_url = acct.links.find { |l| l['rel'].downcase == 'salmon' }
+
+      author.feed = Feed.new(:author => author,
+                             :remote_url => feed_url)
     end
 
     author
