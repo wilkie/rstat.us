@@ -150,7 +150,8 @@ class SalmonInterpreter
       author.salmon_url = acct.links.find { |l| l['rel'].downcase == 'salmon' }
 
       author.feed = Feed.new(:author => author,
-                             :remote_url => feed_url)
+                             :remote_url => feed_url,
+                             :hubs => [])
     end
 
     author

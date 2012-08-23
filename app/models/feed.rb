@@ -30,6 +30,8 @@ class Feed
 
   many :updates, :order => 'created_at desc'
 
+  key :subscribed, Boolean, :default => false
+
   timestamps!
 
   after_create :default_hubs
@@ -64,14 +66,24 @@ class Feed
 
     a = ostatus_feed.author
 
-    self.author = Author.create(:name => a.portable_contacts.display_name,
-                                :username => a.name,
-                                :email => a.email,
-                                :remote_url => a.uri,
-                                :domain => a.uri,
-                                :salmon_url => ostatus_feed.salmon,
-                                :bio => a.portable_contacts.note,
-                                :image_url => avatar_url)
+    author_hash = { :name => a.portable_contacts.display_name,
+                    :username => a.name,
+                    :email => a.email,
+                    :remote_url => a.uri,
+                    :domain => a.uri,
+                    :salmon_url => ostatus_feed.salmon,
+                    :bio => a.portable_contacts.note,
+                    :image_url => avatar_url }
+
+
+    # We may have discovered this Author previously, if not, create it.
+    if self.author.nil?
+      self.author = Author.create(author_hash)
+    else
+      # Sets or updates the attributes to the ones in the possibly more
+      # up-to-date version in the data we received.
+      self.author.update_attributes!(author_hash)
+    end
 
     if(finger_data)
       self.author.public_key = finger_data.public_key
@@ -82,6 +94,9 @@ class Feed
     end
 
     self.hubs = ostatus_feed.hubs
+
+    # We are subscribed, which means this remote feed is populated by a hub
+    self.subscribed = true
 
     save
 
