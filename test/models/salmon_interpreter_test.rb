@@ -83,9 +83,10 @@ describe "SalmonInterpreter" do
 
       describe "unseen" do
         it "saves the new Author if the message is verified" do
-          author = stub_everything(:new? => true)
-          @s.expects(:find_or_initialize_author).returns(author)
-          @s.expects(:message_verified?).returns(true)
+          feed = stub_everything(:save! => true)
+          author = stub_everything(:new? => true, :feed => feed)
+          @s.stubs(:find_or_initialize_author).returns(author)
+          @s.stubs(:message_verified?).returns(true)
 
           author.expects(:save!)
           @s.expects(:process_activity)
@@ -93,10 +94,22 @@ describe "SalmonInterpreter" do
           @s.interpret
         end
 
+        it "creates a feed for the Author if the message is verified" do
+          feed = stub_everything(:save! => true)
+          author = stub_everything(:new? => true, :feed => feed)
+          @s.stubs(:find_or_initialize_author).returns(author)
+          @s.stubs(:message_verified?).returns(true)
+
+          feed.expects(:save!)
+          @s.expects(:process_activity)
+
+          @s.interpret
+        end
+
         it "doesn't save the new Author if the message fails verification" do
           author = stub_everything(:new? => true)
-          @s.expects(:find_or_initialize_author).returns(author)
-          @s.expects(:message_verified?).returns(false)
+          @s.stubs(:find_or_initialize_author).returns(author)
+          @s.stubs(:message_verified?).returns(false)
 
           author.expects(:save!).never
           @s.expects(:process_activity).never
