@@ -56,7 +56,7 @@ group :development, :test do
   gem "rocco", :git => "git://github.com/rtomayko/rocco.git"
   gem "pygmentize", "~> 0.0.3"
   gem "mocha", "~> 0.11.0"
-  gem "vcr", "~> 1.10.3"
+  gem "vcr", "~> 2.2.4"
   gem "simplecov", "~> 0.4.0", :require => false
   gem "launchy", "~> 2.0.5"
   gem "minitest", "~> 2.12.1"
@@ -64,6 +64,6 @@ group :development, :test do
 end
 
 group :test do
-  gem "webmock", "~> 1.6.4"
+  gem "webmock", "~> 1.8.9"
   gem "therubyracer", "~> 0.9.9"
 end

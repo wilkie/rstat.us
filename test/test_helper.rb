@@ -1,5 +1,5 @@
 require "minitest/autorun"
-require "webmock/test_unit"
+require "webmock/minitest"
 
 ENV["RAILS_ENV"] = "test"
 begin

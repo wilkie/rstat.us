@@ -2,9 +2,9 @@ require_relative '../test_helper'
 
 require 'rack/test'
 
-VCR.config do |c|
+VCR.configure do |c|
   c.cassette_library_dir = 'test/data/vcr_cassettes'
-  c.stub_with :webmock
+  c.hook_into :webmock
 end
 
 module AcceptanceHelper
