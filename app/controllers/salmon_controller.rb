@@ -8,14 +8,8 @@ class SalmonController < ApplicationController
       }
     ).interpret
 
-    if Rails.env.development?
-      puts "Salmon notification"
-    end
-
-    status 200
-    return
+    render :text => "", :status => 200
   rescue MongoMapper::DocumentNotFound, ArgumentError, RstatUs::InvalidSalmonMessage
     render :file => "#{Rails.root}/public/404", :status => 404
-    return
   end
 end

@@ -115,4 +115,46 @@ module AcceptanceHelper
 
     Nokogiri.XML(last_response.body)
   end
+
+  def stub_xrd user
+    # ensure that the identity-provider domain is the same in craft_salmon
+    host_meta =  "<XRD xmlns='http://docs.oasis-open.org/ns/xri/xrd-1.0'>"
+    host_meta << "<hm:Host xmlns:hm='http://host-meta.net/xrd/1.0'>identity-provider.com</hm:Host>"
+    host_meta << "<Link rel='lrdd' template='http://identity-provider.com/users/{uri}/xrd.xml'>"
+    host_meta << "<Title>Resource Descriptor</Title>"
+    host_meta << "</Link>"
+    host_meta << "</XRD>"
+    stub_request(:any, /http[s]?:\/\/identity-provider.com\/.well-known\/host-meta/).
+      to_return(:body => host_meta, :content_type => "application/xrd+xml", :status => 200)
+
+    xrd =  "<XRD xmlns='http://docs.oasis-open.org/ns/xri/xrd-1.0'>"
+    xrd << "<Subject>acct:testuser@identity-provider.com</Subject>"
+    xrd << "<Link href='data:application/magic-public-key,#{user.author.public_key}' rel='magic-public-key'></Link>"
+    xrd << "</XRD>"
+    stub_request(:any, /http[s]?:\/\/identity-provider.com\/users\/.*\/xrd\.xml/).
+      to_return(:body => xrd, :content_type => "application/xrd+xml", :status => 200)
+  end
+
+  def craft_salmon
+    poco = OStatus::PortableContacts.new(:id => "1",
+                                         :preferred_username => "testuser")
+
+    author = OStatus::Author.new(:name  => "testuser",
+                                 :uri   => "http://identity-provider.com/",
+                                 :portable_contacts => poco,
+                                 :links => [Atom::Link.new(:rel  => "avatar",
+                                                           :type => "image/png",
+                                                           :href => "http://www.example.com")])
+
+    entry = OStatus::Entry.new(:title => "Test Entry",
+                               :content => "Test Entry",
+                               :updated => DateTime.now,
+                               :published => DateTime.now,
+                               :activity => OStatus::Activity.new(:object_type => :note),
+                               :author => author,
+                               :id => "1",
+                               :links => [])
+
+    OStatus::Salmon.new entry
+  end
 end
