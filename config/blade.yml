@@ -1,0 +1,25 @@
+name: "rstat.us"
+
+configuration:
+  - section: "Main"
+    options:
+      - name: title
+        description: "What would you like the name of this node to be?"
+        type: string
+        default: "rstatus node"
+      - name: character_limit
+        description: "How many characters should be the limit for a status update?"
+        type: integer
+        min: 140
+        default: 140
+      - name: multi_user
+        description: "Would you like to allow multiple user accounts?"
+        type: bool
+        default: false
+  - section: "Multi-User"
+    if: multi_user
+    options:
+      - name: send_email
+        description: "Should email verification be used to change passwords or email address?"
+        type: bool
+        default: true

@@ -12,6 +12,8 @@ class ApplicationController < ActionController::Base
   helper_method :pjax_request?
   helper_method :title
   helper_method :set_pagination_buttons
+  helper_method :addon_enabled?
+  helper_method :user_option_for
 
   protected
 
@@ -93,6 +95,16 @@ class ApplicationController < ActionController::Base
   def sign_out
     session[:user_id] = nil
     @current_user = nil
+  end
+
+  def addon_enabled?(addon)
+    @blade ||= Propeller::Blade.new
+    @blade.addon_enabled? addon
+  end
+
+  def user_option_for(key)
+    @blade ||= Propeller::Blade.new
+    @blade.user_option_for(key)
   end
 
 private

@@ -13,7 +13,13 @@ namespace :test do
   desc "Run all tests, including optional enhancements"
   task :all do
     test_task = Rake::TestTask.new("alltests") do |t|
-      t.test_files = Dir.glob(File.join("test", "**", "*_test.rb"))
+      require 'propeller/bundler'
+
+      test_files = []
+      query = File.join("test", "**", "*_test.rb")
+      test_files = Dir.glob(query)
+      test_files.concat(Propeller.rake_files(query))
+      t.test_files = test_files
     end
     task("alltests").execute
   end
