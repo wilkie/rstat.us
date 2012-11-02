@@ -33,6 +33,7 @@ class Update
 
   # Determines what constitutes a username inside an update text
   USERNAME_REGULAR_EXPRESSION = /(^|[ \t\n\r\f"'\(\[{]+)@([^ \t\n\r\f&?=@%\/\#]*[^ \t\n\r\f&?=@%\/\#.!:;,"'\]}\)])(?:@([^ \t\n\r\f&?=@%\/\#]*[^ \t\n\r\f&?=@%\/\#.!:;,"'\]}\)]))?/
+  CHARACTER_LIMIT = Propeller.user_option_for(:character_limit)
 
   # Updates are aggregated in Feeds
   belongs_to :feed
@@ -45,7 +46,7 @@ class Update
 
   # The content of the update, unaltered, is stored here
   key :text, String, :default => ""
-  validates_length_of :text, :minimum => 1, :maximum => 140
+  validates_length_of :text, :minimum => 1, :maximum => CHARACTER_LIMIT
   validate :do_not_repeat_yourself, :on => :create
 
   # Mentions are stored in the following array
@@ -158,9 +159,9 @@ class Update
     self.text = Nokogiri::HTML::Document.parse(entry_text).text
 
     # Truncate text
-    truncation_necessary = self.text.length > 140
+    truncation_necessary = self.text.length > CHARACTER_LIMIT
     if truncation_necessary
-      self.text = self.text[0..138]
+      self.text = self.text[0..(CHARACTER_LIMIT-2)]
     end
 
     # Generate HTML
