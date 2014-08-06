@@ -4,6 +4,10 @@ require_relative 'acceptance_helper'
 describe "signup" do
   include AcceptanceHelper
 
+  before do
+    Admin.create(:multiuser => true)
+  end
+
   describe "username" do
     it "signs up successfully" do
       u = User.first(:username => "new_user")
@@ -79,7 +83,7 @@ describe "signup" do
     it "prompts for a new username if it clashes" do
       existing_user = Fabricate(:user, :username => "taken")
 
-      log_in("taken")
+      aog_in("taken")
 
       assert_match /users\/new/, page.current_url, "not on the new user page."
 
